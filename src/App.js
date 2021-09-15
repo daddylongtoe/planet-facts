@@ -1,24 +1,44 @@
-import logo from './logo.svg';
-import './App.css';
+// import './App.css';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+} from 'react-router-dom';
+import Theme from './styles/theme';
+import planetData from './data';
+import Planet from './components/Planet';
+import NotFound from './components/NotFound';
+import { useEffect, useState } from 'react';
+import Header from './components/Header';
 
 function App() {
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    setData(planetData);
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Theme>
+        <Header data={data} />
+        <Switch>
+          <Route exact path="/">
+            <Redirect to="/mercury" />
+          </Route>
+          <Route path="/mercury">
+            <Planet planet={data[0]} />
+          </Route>
+          {data.map((planet, index) => (
+            <Route key={planet.name} path={`/${planet.name}`}>
+              <Planet planet={planet} />
+            </Route>
+          ))}
+          <Route component={NotFound} />
+        </Switch>
+      </Theme>
+    </Router>
   );
 }
 
